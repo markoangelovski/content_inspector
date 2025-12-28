@@ -30,10 +30,10 @@
     <flux:modal name="delete-website" class="min-w-[22rem]">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">Delete project?</flux:heading>
+                <flux:heading size="lg">Delete {{ $website->name }}?</flux:heading>
 
                 <flux:text class="mt-2">
-                    You're about to delete this project.<br>
+                    You're about to delete this website.<br>
                     This action cannot be reversed.
                 </flux:text>
             </div>
@@ -46,7 +46,7 @@
                 </flux:modal.close>
 
                 <flux:button wire:click="deleteWebsite" type="submit" variant="danger" class="cursor-pointer">Delete
-                    project</flux:button>
+                    website</flux:button>
             </div>
         </div>
     </flux:modal>

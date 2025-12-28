@@ -51,9 +51,7 @@ class StorePages
         }
 
         // Bulk insert, ignore duplicates (unique per website_id + url)
-        DB::transaction(function () use ($rows) {
-            Page::insertOrIgnore($rows);
-        });
+        Page::insertOrIgnore($rows);
 
         return count($rows);
     }

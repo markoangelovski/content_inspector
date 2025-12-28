@@ -57,18 +57,12 @@ class ProcessPages implements ShouldQueue
         } catch (Throwable $e) {
             report($e);
 
-            // Persist failure state for UI/debugging
-            $website->update([
+            Website::whereKey($this->websiteId)->update([
+                'pages_processing' => false,
                 'pages_message' => $e->getMessage(),
             ]);
 
-            // Re-throw so Laravel marks the job as failed
-            // throw $e;
-        } finally {
-            // 🔐 CRITICAL: always unblock UI
-            $website->update([
-                'pages_processing' => false,
-            ]);
+            throw $e; // allow failed() to run
         }
     }
 
