@@ -45,17 +45,13 @@ class ProcessSitemaps implements ShouldQueue
             return;
         }
 
-        /**
-         * 1️⃣ FETCH PHASE — NO DB TRANSACTIONS - for Neon.tech
-         */
-        try {
-            $sitemaps = $fetcher->fetch($website->url);
-        } catch (\Throwable $e) {
-            // Important: fail fast, do NOT continue
-            throw $e;
-        }
+        $sitemaps = $fetcher->fetch($website->url);
 
         if (empty($sitemaps)) {
+            Website::whereKey($this->websiteId)->update([
+                'sitemaps_processing' => false,
+                'sitemaps_message' => 'no sitemaps',
+            ]);
             return;
         }
 
@@ -69,27 +65,15 @@ class ProcessSitemaps implements ShouldQueue
             'updated_at' => $now,
         ])->all();
 
-        /**
-         * 2️⃣ DB PHASE — SHORT, CLEAN TRANSACTION - for Neon.tech
-         */
-        DB::beginTransaction();
+        Sitemap::insertOrIgnore($rows);
 
-        try {
-            Sitemap::insertOrIgnore($rows);
-
-            $website->update([
-                'sitemaps_fetched' => true,
-                'sitemaps_count' => count($rows),
-                'sitemaps_last_sync' => $now,
-                'sitemaps_message' => 'ok',
-                'sitemaps_processing' => false,
-            ]);
-
-            DB::commit();
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        Website::whereKey($this->websiteId)->update([
+            'sitemaps_fetched' => true,
+            'sitemaps_count' => count($rows),
+            'sitemaps_last_sync' => $now,
+            'sitemaps_message' => 'ok',
+            'sitemaps_processing' => false,
+        ]);
     }
 
     public function failed(Throwable $e): void
