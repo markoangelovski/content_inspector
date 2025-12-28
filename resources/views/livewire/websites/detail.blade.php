@@ -164,7 +164,7 @@
                             <div class="text-3xl text-blue-600 mb-1">
                                 {{ $website['sitemaps_count'] ?? 0 }}
                             </div>
-                            <p class="text-sm">
+                            <p class="text-sm text-gray-500">
                                 {{ ($website['sitemaps_count'] ?? 0) === 1 ? 'Sitemap' : 'Sitemaps' }} found
                             </p>
                         </div>
@@ -180,7 +180,7 @@
                         </flux:button>
 
                         @if (!empty($website['sitemaps_last_sync']))
-                            <p class="text-xs text-center pt-2 border-t border-gray-200"
+                            <p class="text-xs text-gray-500 text-center pt-2 border-t border-gray-200"
                                 title="{{ $website->sitemaps_last_sync }}">
                                 Last synced: {{ $website->sitemaps_last_sync->diffForHumans() }}
                             </p>
@@ -280,7 +280,7 @@
                             <div class="text-3xl text-blue-600 mb-1">
                                 {{ $website['pages_count'] ?? 0 }}
                             </div>
-                            <p class="text-sm text-gray-600">
+                            <p class="text-sm text-gray-500">
                                 {{ ($website['pages_count'] ?? 0) === 1 ? 'Page' : 'Pages' }} found
                             </p>
                         </div>
