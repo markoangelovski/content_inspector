@@ -45,19 +45,36 @@ class ProcessSitemaps implements ShouldQueue
             return;
         }
 
-        $sitemaps = collect($fetcher->fetch($website->url));
+        /**
+         * 1️⃣ FETCH PHASE — NO DB TRANSACTIONS - for Neon.tech
+         */
+        try {
+            $sitemaps = $fetcher->fetch($website->url);
+        } catch (\Throwable $e) {
+            // Important: fail fast, do NOT continue
+            throw $e;
+        }
+
+        if (empty($sitemaps)) {
+            return;
+        }
 
         $now = now();
 
-        $rows = $sitemaps->map(fn(string $url) => [
+        $rows = collect($sitemaps)->map(fn(string $url) => [
             'id' => strtolower(Str::ulid()),
             'website_id' => $website->id,
             'url' => $url,
             'created_at' => $now,
             'updated_at' => $now,
-        ])->values()->all();
+        ])->all();
 
-        DB::transaction(function () use ($website, $rows, $now) {
+        /**
+         * 2️⃣ DB PHASE — SHORT, CLEAN TRANSACTION - for Neon.tech
+         */
+        DB::beginTransaction();
+
+        try {
             Sitemap::insertOrIgnore($rows);
 
             $website->update([
@@ -67,7 +84,12 @@ class ProcessSitemaps implements ShouldQueue
                 'sitemaps_message' => 'ok',
                 'sitemaps_processing' => false,
             ]);
-        });
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     public function failed(Throwable $e): void
