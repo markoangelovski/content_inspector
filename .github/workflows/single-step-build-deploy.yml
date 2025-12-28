@@ -4,9 +4,9 @@
 name: Reference file, do not use
 
 on:
-  push:
-    branches:
-      - master
+  # push:
+  #   branches:
+  #     - master
   workflow_dispatch:
 
 jobs:
