@@ -5,8 +5,8 @@ set -e
 
 cd /home/site/wwwroot
 
-# echo ">>> Copying nginx config..."
-# cp /home/site/wwwroot/default /etc/nginx/sites-available/default
+echo ">>> Copying nginx config..."
+cp /home/site/wwwroot/default /etc/nginx/sites-available/default
 
 # echo ">>> Reloading nginx..."
 # service nginx reload
