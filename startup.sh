@@ -19,5 +19,9 @@ echo ">>> Fixing permissions..."
 chown -R www-data:www-data storage bootstrap/cache
 chmod -R 775 storage bootstrap/cache
 
+echo ">>> Installing custom PHP opcache config..."
+mkdir -p /home/site/php
+cp /home/site/wwwroot/php/opcache.ini /home/site/php/opcache.ini
+
 echo ">>> Starting PHP-FPM..."
 exec php-fpm
