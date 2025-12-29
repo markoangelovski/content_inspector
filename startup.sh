@@ -8,8 +8,8 @@ cd /home/site/wwwroot
 echo ">>> Copying nginx config..."
 cp /home/site/wwwroot/default /etc/nginx/sites-available/default
 
-# echo ">>> Reloading nginx..."
-# service nginx reload
+echo ">>> Reloading nginx..."
+service nginx reload
 
 echo ">>> Ensuring Laravel storage directories..."
 mkdir -p storage/framework/{cache,sessions,views}
