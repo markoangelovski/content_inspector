@@ -35,13 +35,7 @@ jobs:
             composer-${{ runner.os }}-
 
       - name: Run composer install
-        run: composer validate --no-check-publish && composer install \
-          --no-interaction \
-          --prefer-dist \
-          --no-dev \
-          --optimize-autoloader \
-          --classmap-authoritative \
-          --no-progress
+        run: composer validate --no-check-publish && composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader --classmap-authoritative --no-progress
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
