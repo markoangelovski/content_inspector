@@ -18,20 +18,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Make WebJob executable
+        run: chmod +x App_Data/jobs/continuous/queue-worker/run-queue.sh
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.4"
 
-      - name: Check if composer.json exists
-        id: check_files
-        uses: andstor/file-existence-action@v1
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
         with:
-          files: "composer.json"
+          path: vendor
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-
 
-      - name: Run composer install if composer.json exists
-        if: steps.check_files.outputs.files_exists == 'true'
-        run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
+      - name: Run composer install
+        run: composer validate --no-check-publish && composer install \
+          --no-interaction \
+          --prefer-dist \
+          --no-dev \
+          --optimize-autoloader \
+          --classmap-authoritative \
+          --no-progress
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -45,11 +55,38 @@ jobs:
       - name: Build Vite assets
         run: npm run build
 
+      - name: Prepare Laravel directory structure
+        run: |
+          mkdir -p storage/framework/{cache,sessions,views}
+          mkdir -p bootstrap/cache
+
+      - name: Laravel optimize
+        run: |
+          php artisan route:clear
+          php artisan view:clear
+          php artisan event:clear
+
+          php artisan route:cache
+          php artisan view:cache
+          php artisan event:cache
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: php-app
-          path: .
+          path: |
+            .
+            !node_modules
+            !tests
+            !.git
+            !.github
+            !.env
+            !.env.*
+            !vendor/**/.git
+            !storage/logs
+            !storage/framework/cache
+            !storage/framework/sessions
+            !storage/framework/views
 
   deploy:
     runs-on: ubuntu-latest

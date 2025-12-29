@@ -34,3 +34,74 @@ if (app()->environment('production')) {
 URL::forceScheme('https');
 }
 }
+
+4️⃣ Correct WebJob folder structure (precise)
+
+Azure only detects WebJobs in this exact location:
+
+/App_Data/
+└── jobs/
+└── continuous/
+└── queue-worker/
+├── run-queue.sh
+└── settings.job (optional but recommended)
+
+5️⃣ settings.job (optional but recommended)
+
+Create:
+
+{
+"is_singleton": true
+}
+
+Why
+
+Prevents accidental double workers
+
+Protects Redis & DB
+
+6️⃣ Make the script executable (very important)
+
+In GitHub Actions before artifact upload:
+
+-   name: Make WebJob executable
+    run: chmod +x App_Data/jobs/continuous/queue-worker/run-queue.sh
+
+If you forget this:
+
+WebJob uploads
+
+WebJob does NOT run
+
+No error shown
+
+7️⃣ Deployment checklist (step-by-step)
+1️⃣ Add files to repo
+App_Data/jobs/continuous/queue-worker/run-queue.sh
+App_Data/jobs/continuous/queue-worker/settings.job
+
+2️⃣ Ensure permissions step exists in CI
+chmod +x run-queue.sh
+
+3️⃣ Deploy via GitHub Actions (already done)
+4️⃣ Azure Portal → WebJobs
+
+You should see:
+
+queue-worker
+
+Status: Running
+
+8️⃣ Verify WebJob health
+Via Kudu (Advanced Tools)
+https://<app>.scm.azurewebsites.net
+
+Navigate:
+
+site/data/jobs/continuous/queue-worker
+
+Check:
+
+job_log.txt
+
+webjob-queue.log
