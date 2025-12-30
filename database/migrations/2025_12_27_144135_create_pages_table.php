@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Disable wrapping this migration in a transaction
      */
@@ -36,6 +35,7 @@ return new class extends Migration
 
             // Indexes
             $table->index('website_id');
+            $table->index('path');
             $table->index('slug');
 
             // Prevent duplicate pages per website
