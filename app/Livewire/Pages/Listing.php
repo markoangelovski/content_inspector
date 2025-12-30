@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Pages;
 
+use App\Models\Page;
 use App\Models\Website;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -13,7 +14,7 @@ class Listing extends Component
     public Website $website;
 
     public string $search = '';
-    public ?int $selectedPageId = null;
+    public ?string $selectedPageId = null;
 
     /** @var int|string */
     public $perPage = 10;
@@ -25,6 +26,9 @@ class Listing extends Component
         'perPage' => ['except' => 10],
         'page' => ['except' => 1],
     ];
+
+    public ?Page $viewerPage = null;
+    public bool $viewerOpen = false;
 
     public function mount(Website $website)
     {
@@ -45,13 +49,13 @@ class Listing extends Component
         $this->resetPage();
     }
 
-    public function selectPage(int $pageId): void
+    public function selectPage(string $pageId): void
     {
         // logger()->info('Selected page', ['id' => $pageId]);
         $this->selectedPageId = $pageId;
     }
 
-    public function explorePage(int $pageId): void
+    public function explorePage(string $pageId): void
     {
         $this->selectedPageId = $pageId;
     }
@@ -67,6 +71,17 @@ class Listing extends Component
         }
 
         return (int) $this->perPage;
+    }
+
+    public function openViewer(string $pageId): void
+    {
+        $this->viewerPage = Page::findOrFail($pageId);
+        $this->viewerOpen = true;
+    }
+
+    public function closeViewer(): void
+    {
+        $this->viewerOpen = false;
     }
 
     public function render()

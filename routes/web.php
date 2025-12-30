@@ -34,6 +34,7 @@ Route::middleware(['auth'])->group(function () {
         )
         ->name('two-factor.show');
 
+    // Content Inspector routes:
     Route::get("/websites", WebsitesListing::class)->name("websites.listing");
     Route::get("/websites/{website}", WebsitesDetail::class)->name("websites.detail");
     Route::get("/websites/{website}/sitemaps", SitemapsListing::class)->name("sitemaps.listing");
