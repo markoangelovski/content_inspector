@@ -39,6 +39,7 @@ class Listing extends Component
     {
         $this->resetPage();
     }
+
     public function updatingPerPage($value)
     {
         if (!in_array($value, $this->perPageOptions, true)) {
