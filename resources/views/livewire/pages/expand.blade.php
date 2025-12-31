@@ -1,4 +1,4 @@
-<div class="h-screen w-full flex flex-col">
+<div class="h-screen w-full flex flex-col" x-init="window.addEventListener('pages:view-content', (e) => $wire.openViewer(e.detail.pageId))">
     {{-- Optional Header Overlay --}}
     <div class="absolute top-4 left-4 z-50 flex items-center gap-3">
         <flux:button icon="arrow-left" variant="subtle" class="bg-white/80 dark:bg-zinc-800/80 backdrop-blur"
@@ -16,4 +16,7 @@
 
     {{-- React Flow Root - Must be h-full --}}
     <div wire:ignore id="pages-flow-root" class="flex-1 w-full" data-pages='@json($pages->values())'></div>
+
+    {{-- The Reusable Drawer --}}
+    <x-inspector.page-viewer-drawer :viewer-page="$viewerPage" />
 </div>
