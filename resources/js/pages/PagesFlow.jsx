@@ -179,7 +179,11 @@ function PagesFlow({ pages }) {
     }, []);
 
     const onViewContent = useCallback((pageId) => {
-        console.log("View content:", pageId);
+        window.dispatchEvent(
+            new CustomEvent("pages:view-content", {
+                detail: { pageId },
+            })
+        );
     }, []);
 
     const selectedPageId = null;
@@ -202,6 +206,7 @@ function PagesFlow({ pages }) {
 
     return (
         <div className="h-[600px] w-full bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl">
+            {/* <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl"> */}
             <ReactFlow
                 nodes={nodes}
                 edges={edges}

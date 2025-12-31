@@ -4,7 +4,7 @@
         <flux:breadcrumbs.item>{{ $website->name }}</flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
-    <x-header :name="$website->name" :url="$website->url">
+    <x-page-header :name="$website->name" :url="$website->url">
         <flux:dropdown>
             <flux:button icon:trailing="cog-6-tooth" class="cursor-pointer"></flux:button>
 
@@ -20,7 +20,7 @@
                 </flux:modal.trigger>
             </flux:menu>
         </flux:dropdown>
-    </x-header>
+    </x-page-header>
 
 
     {{-- Create/Edit website modal --}}

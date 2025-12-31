@@ -6,7 +6,7 @@
         <flux:breadcrumbs.item>Pages</flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
-    <x-header :name="$website->name" :url="$website->url" />
+    <x-page-header :name="$website->name" :url="$website->url" />
 
     <div class="flex flex-col rounded-xl border border-gray-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
         {{-- Header --}}
@@ -57,7 +57,6 @@
 
                 <flux:input wire:model.live.debounce.300ms="search" placeholder="Search pages by path"
                     class=" w-full bg-white text-gray-900 placeholder-gray-400 border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-500 dark:border-zinc-700" />
-
             </div>
 
         </div>
@@ -193,7 +192,9 @@
         </div>
 
         {{-- Information Architecture --}}
-        <div class="mt-8 space-y-4">
+        <div x-init="window.addEventListener('pages:view-content', (e) => {
+            $wire.openViewer(e.detail.pageId)
+        })" class="mt-8 space-y-4">
             <div class="px-4 flex items-center justify-between">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-zinc-100">
                     Information Architecture
@@ -216,12 +217,16 @@
                 </div>
             </div>
 
-            <div data-react-pages-flow data-website-id="{{ $website->id }}" data-pages='@json($pages)'
-                wire:ignore class=""></div>
+            {{-- <div class="h-[600px] w-full">
+                <div wire:ignore data-react-pages-flow data-website-id="{{ $website->id }}"
+                    data-pages='@json($pages->values())'
+                    data-version="{{ md5($pages->values()->toJson()) }} "class="h-full w-full"></div>
+            </div> --}}
+
+            <div wire:ignore id="pages-flow-root" class="h-[600px] w-full" data-pages='@json($pages->values())'>
+            </div>
         </div>
 
-
     </div>
-
 
 </div>

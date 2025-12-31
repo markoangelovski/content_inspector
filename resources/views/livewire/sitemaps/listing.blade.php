@@ -6,7 +6,7 @@
         <flux:breadcrumbs.item>Sitemaps</flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
-    <x-header :name="$website->name" :url="$website->url" />
+    <x-page-header :name="$website->name" :url="$website->url" />
 
     <div class="space-y-4">
         <table class="w-full rounded-xl border border-gray-200">

@@ -21,26 +21,42 @@ class Listing extends Component
 
     public array $perPageOptions = [10, 50, 100, 1000, 'all'];
 
-    protected $queryString = [
-        'search' => ['except' => ''],
-        'perPage' => ['except' => 10],
-        'page' => ['except' => 1],
-    ];
-
     public ?Page $viewerPage = null;
     public bool $viewerOpen = false;
 
-    public function mount(Website $website)
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'perPage' => ['except' => 10],
+        'page'    => ['except' => 1],
+    ];
+
+    public function mount(Website $website): void
     {
         $this->website = $website;
     }
 
-    public function updatingSearch()
+    public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    public function updatingPerPage($value)
+    public function updatedSearch()
+    {
+        $pages = $this->website
+            ->pages()
+            ->when(
+                $this->search !== '',
+                fn($query) => $query->where('path', 'like', '%' . $this->search . '%')
+            )
+            ->orderBy('path')
+            ->paginate($this->resolvePerPage());
+
+        $this->dispatch('pages-updated', [
+            'pages'   => $pages->values(),
+        ]);
+    }
+
+    public function updatingPerPage($value): void
     {
         if (!in_array($value, $this->perPageOptions, true)) {
             $this->perPage = 10;
@@ -50,13 +66,23 @@ class Listing extends Component
         $this->resetPage();
     }
 
-    public function selectPage(string $pageId): void
+    public function updatedPerPage()
     {
-        // logger()->info('Selected page', ['id' => $pageId]);
-        $this->selectedPageId = $pageId;
+        $pages = $this->website
+            ->pages()
+            ->when(
+                $this->search !== '',
+                fn($query) => $query->where('path', 'like', '%' . $this->search . '%')
+            )
+            ->orderBy('path')
+            ->paginate($this->resolvePerPage());
+
+        $this->dispatch('pages-updated', [
+            'pages'   => $pages->values(),
+        ]);
     }
 
-    public function explorePage(string $pageId): void
+    public function selectPage(string $pageId): void
     {
         $this->selectedPageId = $pageId;
     }
@@ -87,19 +113,17 @@ class Listing extends Component
 
     public function render()
     {
-        $query = $this->website
+        $pages = $this->website
             ->pages()
-            ->when($this->search !== '', function ($query) {
-                $query->where('path', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy('path');
-
-        $pages = $query->paginate(
-            $this->resolvePerPage()
-        );
+            ->when(
+                $this->search !== '',
+                fn($query) => $query->where('path', 'like', '%' . $this->search . '%')
+            )
+            ->orderBy('path')
+            ->paginate($this->resolvePerPage());
 
         return view('livewire.pages.listing', [
-            'pages' => $pages,
+            'pages'      => $pages,
             'totalCount' => $pages->total(),
         ]);
     }
