@@ -22,6 +22,7 @@ return new class extends Migration {
             // Page attributes
             $table->string('url', 2048);
             $table->string('path', 1024);
+            $table->string('parent_path', 1024)->nullable();
             $table->string('slug', 255);
             $table->json('content')->nullable();
 

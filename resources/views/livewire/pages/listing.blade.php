@@ -65,7 +65,8 @@
         {{-- Table --}}
         <div class="overflow-auto">
             <div class="p-4">
-                <table class="w-full text-sm">
+                {{-- Table Header --}}
+                <table class="w-full text-sm table-fixed">
                     <thead class="text-left text-gray-500 dark:text-zinc-400">
                         <tr class="border-b border-gray-200 dark:border-zinc-800">
                             <th class="pb-2 pr-4">Path</th>
@@ -74,39 +75,37 @@
                             <th class="pb-2 text-center">View Content</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse ($pages as $page)
-                            <tr wire:key="page-{{ $page->id }}" wire:click="selectPage('{{ $page->id }}')"
-                                class=" border-b cursor-pointer transition-colors border-gray-200 hover:bg-gray-50 dark:border-zinc-800/50 dark:hover:bg-zinc-800/30 {{ $selectedPageId === $page->id ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400' : 'text-gray-700 dark:text-zinc-300' }}">
-                                <td class="py-3 pr-4">
-                                    {{ $page->path }}
-                                </td>
-
-                                <td class="py-3 pr-4 text-gray-400 dark:text-zinc-400">
-                                    {{ $page->slug }}
-                                </td>
-
-                                <td class="py-3 pr-4 text-xs text-gray-500 dark:text-zinc-500">
-                                    {{ $page->created_at->format('Y-m-d H:i') }}
-                                </td>
-
-                                <td class="py-3 text-center">
-                                    <button type="button" wire:click.stop="openViewer('{{ $page->id }}')"
-                                        class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 dark:text-zinc-400 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
-                                        title="View content">
-                                        <flux:icon.eye class="size-4" />
-                                    </button>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="text-center py-8 text-gray-500 dark:text-zinc-500">
-                                    No pages found
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
                 </table>
+
+                {{-- Scrollable tbody --}}
+                <div class="overflow-y-auto" style="max-height: 400px;">
+                    <table class="w-full text-sm table-fixed">
+                        <tbody>
+                            @forelse ($pages as $page)
+                                <tr wire:key="page-{{ $page->id }}" wire:click="selectPage('{{ $page->id }}')"
+                                    class="border-b cursor-pointer transition-colors border-gray-200 hover:bg-gray-50 dark:border-zinc-800/50 dark:hover:bg-zinc-800/30 {{ $selectedPageId === $page->id ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400' : 'text-gray-700 dark:text-zinc-300' }}">
+                                    <td class="py-3 pr-4">{{ $page->path }}</td>
+                                    <td class="py-3 pr-4 text-gray-400 dark:text-zinc-400">{{ $page->slug }}</td>
+                                    <td class="py-3 pr-4 text-xs text-gray-500 dark:text-zinc-500">
+                                        {{ $page->created_at->format('Y-m-d H:i') }}</td>
+                                    <td class="py-3 text-center">
+                                        <button type="button" wire:click.stop="openViewer('{{ $page->id }}')"
+                                            class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 dark:text-zinc-400 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                                            title="View content">
+                                            <flux:icon.eye class="size-4" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center py-8 text-gray-500 dark:text-zinc-500">
+                                        No pages found
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
                 {{-- Pagination --}}
                 @if ($perPage !== 'all')
@@ -116,6 +115,7 @@
                 @endif
             </div>
         </div>
+
 
         {{-- Drawer --}}
         <div x-data="{ open: @entangle('viewerOpen') }" x-show="open" x-cloak class="fixed inset-0 z-50 flex">
@@ -216,7 +216,8 @@
                 </div>
             </div>
 
-            <div data-react-pages-flow data-website-id="{{ $website->id }}" wire:ignore></div>
+            <div data-react-pages-flow data-website-id="{{ $website->id }}" data-pages='@json($pages)'
+                wire:ignore class=""></div>
         </div>
 
 

@@ -1,13 +1,27 @@
-import './bootstrap'
-import React from 'react'
-import { createRoot } from 'react-dom/client'
-import PagesFlow from './pages/PagesFlow'
-import 'reactflow/dist/style.css'
+import "./bootstrap";
+import React from "react";
+import { createRoot } from "react-dom/client";
+import PagesFlow from "./pages/PagesFlow";
+import "reactflow/dist/style.css";
 
-document.querySelectorAll('[data-react-pages-flow]').forEach(el => {
-  const websiteId = el.dataset.websiteId
+const mountedRoots = new WeakMap();
 
-  createRoot(el).render(
-    <PagesFlow websiteId={websiteId} />
-  )
-})
+function mountPagesFlow() {
+    document.querySelectorAll("[data-react-pages-flow]").forEach((el) => {
+        if (mountedRoots.has(el)) return;
+
+        const pages = el.dataset.pages;
+        // console.log(JSON.stringify(JSON.parse(pages).data));
+
+        const root = createRoot(el);
+        root.render(<PagesFlow pages={JSON.parse(pages).data} />);
+
+        mountedRoots.set(el, root);
+    });
+}
+
+// Initial page load
+document.addEventListener("DOMContentLoaded", mountPagesFlow);
+
+// Livewire navigation (THIS IS THE KEY PART)
+document.addEventListener("livewire:navigated", mountPagesFlow);

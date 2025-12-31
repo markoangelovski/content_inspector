@@ -38,12 +38,35 @@ class StorePages
             $path = '/' . ltrim($path, '/'); // ensure leading slash
             $slug = basename($path);
 
+            // Determine parent_path
+            if ($path === '/') {
+                $parentPath = null;
+            } else {
+                // Remove trailing slash for processing, we'll add it back if needed
+                $hasTrailingSlash = str_ends_with($path, '/');
+                $trimmedPath = rtrim($path, '/');
+
+                // Get parent directory
+                $parentPath = '/' . ltrim(dirname($trimmedPath), '/');
+
+                // Keep trailing slash if original path had it (except for root '/')
+                if ($parentPath !== '/' && $hasTrailingSlash) {
+                    $parentPath .= '/';
+                }
+
+                // Root level pages should have parentPath as '/'
+                if ($parentPath === '') {
+                    $parentPath = '/';
+                }
+            }
+
             $rows[] = [
                 'id' => strtolower(Str::ulid()),
                 'website_id' => $website->id,
                 'url' => $url,
                 'path' => $path,
                 'slug' => $slug,
+                'parent_path' => $parentPath,
                 'content' => json_encode([]), // initially empty
                 'created_at' => $now,
                 'updated_at' => $now,
