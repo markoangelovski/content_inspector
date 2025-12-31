@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import ReactFlow, { Background, Controls, Position } from "reactflow";
+import ReactFlow, {
+    Background,
+    Controls,
+    Position,
+    useReactFlow,
+    ReactFlowProvider,
+} from "reactflow";
 import "reactflow/dist/style.css";
 
 import PageNode from "./nodes/PageNode";
@@ -170,7 +176,9 @@ function buildTrees({
 /**
  * Main component
  */
-function PagesFlow({ pages }) {
+function PagesFlowContent({ pages, selectedPageId = null }) {
+    // Rename internal logic
+    const { setCenter } = useReactFlow();
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
 
@@ -197,8 +205,6 @@ function PagesFlow({ pages }) {
         );
     }, []);
 
-    const selectedPageId = null;
-
     const subtreeWidths = useMemo(() => computeSubtreeWidths(pages), [pages]);
 
     useEffect(() => {
@@ -219,12 +225,37 @@ function PagesFlow({ pages }) {
 
         setNodes(nodes);
         setEdges(edges);
+
+        // Center the selected node
+        if (selectedPageId) {
+            const selectedNode = nodes.find((n) => n.id === selectedPageId);
+            if (selectedNode) {
+                setCenter(
+                    selectedNode.position.x + 120,
+                    selectedNode.position.y + 50,
+                    {
+                        zoom: 1.2,
+                        duration: 800,
+                    }
+                );
+            }
+        }
     }, [pages, expandedNodes, subtreeWidths, onExpand, onViewContent]);
+
+    // Update onNodeClick to sync back to Livewire
+    const onNodeClick = useCallback((event, node) => {
+        window.dispatchEvent(
+            new CustomEvent("pages:page-selected", {
+                detail: { pageId: node.id },
+            })
+        );
+    }, []);
 
     return (
         <ReactFlow
             nodes={nodes}
             edges={edges}
+            onNodeClick={onNodeClick}
             nodeTypes={nodeTypes}
             fitView
             nodesDraggable={false}
@@ -236,6 +267,15 @@ function PagesFlow({ pages }) {
             <Background />
             <Controls />
         </ReactFlow>
+    );
+}
+
+// React Flow hooks require the component to be wrapped in a Provider
+function PagesFlow(props) {
+    return (
+        <ReactFlowProvider>
+            <PagesFlowContent {...props} />
+        </ReactFlowProvider>
     );
 }
 

@@ -51,15 +51,11 @@ class Listing extends Component
         $this->resetPage();
     }
 
+    // Search term entered
     public function updatedSearch()
     {
         $this->resetPage();
-
-        $pages = $this->getPages();
-
-        $this->dispatch('pages-updated', [
-            'pages' => $pages->values(),
-        ]);
+        $this->broadcastUpdate('pages-updated');
     }
 
     public function updatingPerPage($value): void
@@ -72,29 +68,35 @@ class Listing extends Component
         $this->resetPage();
     }
 
+    // Entries per page change
     public function updatedPerPage()
     {
         $this->resetPage();
-
-        $pages = $this->getPages();
-
-        $this->dispatch('pages-updated', [
-            'pages' => $pages->values(),
-        ]);
+        $this->broadcastUpdate();
     }
 
+    // Pagination page change
     public function updatedPage()
     {
-        $pages = $this->getPages();
-
-        $this->dispatch('pages-updated', [
-            'pages' => $pages->values(),
-        ]);
+        $this->broadcastUpdate();
     }
 
     public function selectPage(string $pageId): void
     {
         $this->selectedPageId = $pageId;
+
+        // Dispatch specifically for selection so React can center the node
+        $this->broadcastUpdate();
+    }
+
+    protected function broadcastUpdate()
+    {
+        $pages = $this->getPages();
+
+        $this->dispatch('pages-updated', [
+            'pages' => $pages->values(),
+            'selectedPageId' => $this->selectedPageId,
+        ]);
     }
 
     protected function resolvePerPage(): int

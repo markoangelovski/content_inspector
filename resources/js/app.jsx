@@ -6,7 +6,7 @@ import "reactflow/dist/style.css";
 
 const mountedRoots = new WeakMap();
 
-function mountPagesFlow(pages) {
+function mountPagesFlow(pages, selectedPageId = null) {
     const el = document.getElementById("pages-flow-root");
     if (!el) return;
 
@@ -16,7 +16,8 @@ function mountPagesFlow(pages) {
         mountedRoots.set(el, root);
     }
 
-    root.render(<PagesFlow pages={pages} />);
+    // Pass the selectedPageId through to the component
+    root.render(<PagesFlow pages={pages} selectedPageId={selectedPageId} />);
 }
 
 // Handle initial page load and wire:navigate events
@@ -32,7 +33,7 @@ function mountPagesFlow(pages) {
     });
 });
 
-// React Flow update on Livewire events
+// React Flow update on Livewire events: pagination, search, perPage, selecting a page in table
 document.addEventListener("pages-updated", (event) =>
-    mountPagesFlow(event.detail[0].pages || [])
+    mountPagesFlow(event.detail[0].pages, event.detail[0].selectedPageId)
 );

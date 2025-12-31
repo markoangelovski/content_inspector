@@ -82,6 +82,7 @@
                         <tbody>
                             @forelse ($pages as $page)
                                 <tr wire:key="page-{{ $page->id }}" wire:click="selectPage('{{ $page->id }}')"
+                                    id="page-row-{{ $page->id }}"
                                     class="border-b cursor-pointer transition-colors border-gray-200 hover:bg-gray-50 dark:border-zinc-800/50 dark:hover:bg-zinc-800/30 {{ $selectedPageId === $page->id ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400' : 'text-gray-700 dark:text-zinc-300' }}">
                                     <td class="py-3 pr-4">{{ $page->path }}</td>
                                     <td class="py-3 pr-4 text-gray-400 dark:text-zinc-400">{{ $page->slug }}</td>
@@ -194,28 +195,29 @@
         {{-- Information Architecture --}}
         <div x-init="window.addEventListener('pages:view-content', (e) => {
             $wire.openViewer(e.detail.pageId)
-        })" class="mt-8 space-y-4">
-            <div class="px-4 flex items-center justify-between">
-                <h2 class="text-lg font-medium text-gray-900 dark:text-zinc-100">
-                    Information Architecture
-                </h2>
-
-                <div class="flex gap-2">
-                    <button type="button"
-                        class="px-3 py-1 text-sm rounded-md
-                       bg-gray-100 hover:bg-gray-200
-                       dark:bg-zinc-800 dark:hover:bg-zinc-700">
-                        Expand all
-                    </button>
-
-                    <button type="button"
-                        class="px-3 py-1 text-sm rounded-md
-                       bg-gray-100 hover:bg-gray-200
-                       dark:bg-zinc-800 dark:hover:bg-zinc-700">
-                        Collapse all
-                    </button>
-                </div>
-            </div>
+        });
+        window.addEventListener('pages:page-selected', (e) => {
+            const pageId = e.detail.pageId;
+        
+            // 1. Update Livewire state
+            $wire.selectPage(pageId);
+        
+            // 2. Scroll the table row into view
+            // We use a tiny timeout to ensure the DOM is ready 
+            // (especially if the table just re-rendered)
+            setTimeout(() => {
+                const row = document.getElementById(`page-row-${pageId}`);
+                if (row) {
+                    row.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest'
+                    });
+                }
+            }, 50);
+        });" class="mt-8 px-4 space-y-4">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-zinc-100">
+                Information Architecture
+            </h2>
 
             <div wire:ignore id="pages-flow-root" class="h-[600px] w-full" data-pages='@json($pages->values())'>
             </div>
