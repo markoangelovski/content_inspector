@@ -205,23 +205,20 @@ function PagesFlow({ pages }) {
     }, [pages, expandedNodes, subtreeWidths, onExpand, onViewContent]);
 
     return (
-        <div className="h-[600px] w-full bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl">
-            {/* <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl"> */}
-            <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                nodeTypes={nodeTypes}
-                fitView
-                nodesDraggable={false}
-                nodesConnectable={false}
-                elementsSelectable
-                panOnDrag
-                zoomOnScroll
-            >
-                <Background />
-                <Controls />
-            </ReactFlow>
-        </div>
+        <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            nodeTypes={nodeTypes}
+            fitView
+            nodesDraggable={false}
+            nodesConnectable={false}
+            elementsSelectable
+            panOnDrag
+            zoomOnScroll
+        >
+            <Background />
+            <Controls />
+        </ReactFlow>
     );
 }
 

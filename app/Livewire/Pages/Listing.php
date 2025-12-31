@@ -16,6 +16,9 @@ class Listing extends Component
     public string $search = '';
     public ?string $selectedPageId = null;
 
+    /** REQUIRED for pagination hydration */
+    public int $page = 1;
+
     /** @var int|string */
     public $perPage = 10;
 
@@ -30,9 +33,17 @@ class Listing extends Component
         'page'    => ['except' => 1],
     ];
 
-    public function mount(Website $website): void
+    protected function getPages()
     {
-        $this->website = $website;
+        return $this->website
+            ->pages()
+            ->when(
+                $this->search !== '',
+                fn($query) =>
+                $query->where('path', 'like', '%' . $this->search . '%')
+            )
+            ->orderBy('path')
+            ->paginate($this->resolvePerPage());
     }
 
     public function updatingSearch(): void
@@ -42,17 +53,12 @@ class Listing extends Component
 
     public function updatedSearch()
     {
-        $pages = $this->website
-            ->pages()
-            ->when(
-                $this->search !== '',
-                fn($query) => $query->where('path', 'like', '%' . $this->search . '%')
-            )
-            ->orderBy('path')
-            ->paginate($this->resolvePerPage());
+        $this->resetPage();
+
+        $pages = $this->getPages();
 
         $this->dispatch('pages-updated', [
-            'pages'   => $pages->values(),
+            'pages' => $pages->values(),
         ]);
     }
 
@@ -68,17 +74,21 @@ class Listing extends Component
 
     public function updatedPerPage()
     {
-        $pages = $this->website
-            ->pages()
-            ->when(
-                $this->search !== '',
-                fn($query) => $query->where('path', 'like', '%' . $this->search . '%')
-            )
-            ->orderBy('path')
-            ->paginate($this->resolvePerPage());
+        $this->resetPage();
+
+        $pages = $this->getPages();
 
         $this->dispatch('pages-updated', [
-            'pages'   => $pages->values(),
+            'pages' => $pages->values(),
+        ]);
+    }
+
+    public function updatedPage()
+    {
+        $pages = $this->getPages();
+
+        $this->dispatch('pages-updated', [
+            'pages' => $pages->values(),
         ]);
     }
 
@@ -109,6 +119,11 @@ class Listing extends Component
     public function closeViewer(): void
     {
         $this->viewerOpen = false;
+    }
+
+    public function mount(Website $website): void
+    {
+        $this->website = $website;
     }
 
     public function render()

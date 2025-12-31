@@ -217,12 +217,6 @@
                 </div>
             </div>
 
-            {{-- <div class="h-[600px] w-full">
-                <div wire:ignore data-react-pages-flow data-website-id="{{ $website->id }}"
-                    data-pages='@json($pages->values())'
-                    data-version="{{ md5($pages->values()->toJson()) }} "class="h-full w-full"></div>
-            </div> --}}
-
             <div wire:ignore id="pages-flow-root" class="h-[600px] w-full" data-pages='@json($pages->values())'>
             </div>
         </div>
