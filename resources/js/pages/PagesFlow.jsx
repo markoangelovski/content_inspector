@@ -44,6 +44,17 @@ function buildChildrenMap(pages) {
     return map;
 }
 
+function getAllExpandableNodeIds(pages) {
+    const parents = new Set();
+    pages.forEach((p) => {
+        if (p.parent_path) {
+            parents.add(p.parent_path);
+        }
+    });
+
+    return new Set(pages.filter((p) => parents.has(p.path)).map((p) => p.path));
+}
+
 /**
  * Precompute subtree widths so layout is stable
  */
@@ -165,7 +176,7 @@ function PagesFlow({ pages }) {
 
     // Expand everything by default
     const [expandedNodes, setExpandedNodes] = useState(
-        () => new Set(pages.map((p) => p.path))
+        getAllExpandableNodeIds(pages)
     );
 
     const nodeTypes = useMemo(() => ({ page: PageNode }), []);
@@ -189,6 +200,12 @@ function PagesFlow({ pages }) {
     const selectedPageId = null;
 
     const subtreeWidths = useMemo(() => computeSubtreeWidths(pages), [pages]);
+
+    useEffect(() => {
+        // When changing the "pages" on the fly, set all expandable nodes as expanded
+        // Happens on pagination clicks, changing perPage and search term
+        setExpandedNodes(getAllExpandableNodeIds(pages));
+    }, [pages]);
 
     useEffect(() => {
         const { nodes, edges } = buildTrees({
