@@ -4,6 +4,8 @@ use App\Livewire\Websites\Listing as WebsitesListing;
 use App\Livewire\Websites\Detail as WebsitesDetail;
 use App\Livewire\Sitemaps\Listing as SitemapsListing;
 use App\Livewire\Pages\Listing as PagesListing;
+use App\Livewire\Pages\Expand as PagesExpand;
+
 use Livewire\Volt\Volt;
 use Laravel\Fortify\Features;
 use Illuminate\Support\Facades\Route;
@@ -39,4 +41,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get("/websites/{website}", WebsitesDetail::class)->name("websites.detail");
     Route::get("/websites/{website}/sitemaps", SitemapsListing::class)->name("sitemaps.listing");
     Route::get("/websites/{website}/pages", PagesListing::class)->name("pages.listing");
+    Route::get("/websites/{website}/pages/expand", PagesExpand::class)->name("pages.expand");
 });

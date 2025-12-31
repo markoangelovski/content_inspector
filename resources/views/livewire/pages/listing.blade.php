@@ -215,9 +215,35 @@
                 }
             }, 50);
         });" class="mt-8 px-4 space-y-4">
-            <h2 class="text-lg font-medium text-gray-900 dark:text-zinc-100">
-                Information Architecture
-            </h2>
+            <div class="px-4 flex items-center justify-between">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-zinc-100">
+                    Information Architecture
+                </h2>
+
+                <div class="flex gap-2">
+                    {{-- <button type="button"
+                        class="px-3 py-1 text-sm rounded-md
+                       bg-gray-100 hover:bg-gray-200
+                       dark:bg-zinc-800 dark:hover:bg-zinc-700">
+                        Expand all
+                    </button> --}}
+
+                    <flux:button variant="subtle" icon="arrows-pointing-out" title="Expand to Fullscreen"
+                        {{-- 1. Use a dynamic wire:key to force Livewire to refresh the href --}}
+                        wire:key="expand-button-page-{{ $pages->currentPage() }}-{{ $search }}"
+                        href="{{ route('pages.expand', [
+                            'website' => $website,
+                            'search' => $search,
+                            'perPage' => $perPage,
+                            'page' => $pages->currentPage(),
+                        ]) }}"
+                        target="_blank">
+                        Expand
+                    </flux:button>
+                </div>
+            </div>
+
+
 
             <div wire:ignore id="pages-flow-root" class="h-[600px] w-full" data-pages='@json($pages->values())'>
             </div>
