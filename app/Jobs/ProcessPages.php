@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use Throwable;
-use Livewire\Livewire;
 use App\Models\Website;
 use Illuminate\Bus\Queueable;
 use App\Services\PagesFetcher;

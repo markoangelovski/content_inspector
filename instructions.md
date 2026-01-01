@@ -105,3 +105,5 @@ Check:
 job_log.txt
 
 webjob-queue.log
+
+php artisan view:clear

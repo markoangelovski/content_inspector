@@ -1,7 +1,9 @@
 <div>
     <flux:breadcrumbs class="mb-6">
-        <flux:breadcrumbs.item href="{{ route('websites.listing') }}" wire:navigate>Websites</flux:breadcrumbs.item>
-        <flux:breadcrumbs.item href="{{ route('websites.detail', $website) }}" wire:navigate>{{ $website->name }}
+        <flux:breadcrumbs.item href="{{ route('websites.listing') }}" wire:navigate class="hover:underline">Websites
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item href="{{ route('websites.detail', $website) }}" wire:navigate class="hover:underline">
+            {{ $website->name }}
         </flux:breadcrumbs.item>
         <flux:breadcrumbs.item>Pages</flux:breadcrumbs.item>
     </flux:breadcrumbs>

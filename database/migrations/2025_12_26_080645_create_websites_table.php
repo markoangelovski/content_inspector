@@ -40,6 +40,11 @@ return new class extends Migration
             $table->string("pages_message")->nullable();
             $table->boolean("pages_processing")->default(false);
 
+            $table->boolean("content_fetched")->default(false);;
+            $table->timestamp('content_last_sync')->nullable();
+            $table->string("content_message")->nullable();
+            $table->boolean("content_processing")->default(false);
+
             $table->ulid("user_id");
             $table->foreign('user_id')->references('id')->on('users');
         });

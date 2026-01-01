@@ -1,6 +1,7 @@
 <div class="space-y-6">
     <flux:breadcrumbs class="mb-6">
-        <flux:breadcrumbs.item href="{{ route('websites.listing') }}" wire:navigate>Websites</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item href="{{ route('websites.listing') }}" wire:navigate class="hover:underline">Websites
+        </flux:breadcrumbs.item>
         <flux:breadcrumbs.item>{{ $website->name }}</flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
@@ -21,7 +22,6 @@
             </flux:menu>
         </flux:dropdown>
     </x-page-header>
-
 
     {{-- Create/Edit website modal --}}
     <livewire:websites.modal />
@@ -112,15 +112,16 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         {{-- ================== SITEMAPS CARD ================== --}}
         <x-card class="{{ !$website->sitemaps_fetched ? 'opacity-60' : '' }}">
 
             {{-- Header --}}
-            <div class="px-6 pt-6">
+            <div class="px-6 pt-6 flex items-center space-x-2">
+                <flux:icon.map class="size-4" />
                 @if ($website->sitemaps_fetched)
                     <a href="{{ route('sitemaps.listing', $website['id'] ?? null) }}"
-                        class="text-left font-semibold transition-colors transition" wire:navigate>
+                        class="text-left font-semibold hover:underline" wire:navigate>
                         Sitemaps
                     </a>
                 @else
@@ -149,9 +150,19 @@
                             :disabled="$fetchingSitemaps"
                             class="w-full inline-flex items-center justify-center h-9 rounded-md px-4 text-sm font-medium text-white transition cursor-pointer">
                             @if ($fetchingSitemaps)
-                                Fetching sitemaps…
+                                <div class="flex items-center space-x-2">
+                                    <flux:icon.arrow-path class="size-4 animate-spin" />
+                                    <span>
+                                        Fetching sitemaps…
+                                    </span>
+                                </div>
                             @else
-                                Fetch sitemaps
+                                <div class="flex items-center space-x-2">
+                                    <flux:icon.arrows-right-left class="size-4" />
+                                    <span>
+                                        Fetch sitemaps
+                                    </span>
+                                </div>
                             @endif
                         </flux:button>
 
@@ -173,9 +184,19 @@
                             :disabled="$fetchingSitemaps"
                             class="w-full inline-flex items-center justify-center h-9 rounded-md px-4 text-sm font-medium text-white transition cursor-pointer">
                             @if ($fetchingSitemaps)
-                                Refreshing sitemaps…
+                                <div class="flex items-center space-x-2">
+                                    <flux:icon.arrow-path class="size-4 animate-spin" />
+                                    <span>
+                                        Refreshing sitemaps…
+                                    </span>
+                                </div>
                             @else
-                                Refresh sitemaps
+                                <div class="flex items-center space-x-2">
+                                    <flux:icon.arrow-path class="size-4" />
+                                    <span>
+                                        Refresh sitemaps
+                                    </span>
+                                </div>
                             @endif
                         </flux:button>
 
@@ -192,7 +213,9 @@
                 {{-- Add sitemap manually --}}
 
                 <flux:modal.trigger name="add-sitemap">
-                    <flux:button class="cursor-pointer w-full">Add sitemap</flux:button>
+                    <flux:button icon="plus" class="cursor-pointer w-full">
+                        Add sitemap
+                    </flux:button>
                 </flux:modal.trigger>
 
                 <flux:modal name="add-sitemap" class="md:w-96">
@@ -227,10 +250,11 @@
         <x-card class="{{ !$website->pages_fetched ? 'opacity-60' : '' }}">
 
             {{-- Header --}}
-            <div class="px-6 pt-6">
+            <div class="px-6 pt-6 flex items-center space-x-2">
+                <flux:icon.document class="size-4" />
                 @if ($website->pages_fetched)
                     <a href="{{ route('pages.listing', $website['id'] ?? null) }}"
-                        class="text-left font-semibold hover:text-blue-600 transition-colors" wire:navigate>
+                        class="text-left font-semibold hover:underline" wire:navigate>
                         Pages
                     </a>
                 @else
@@ -260,9 +284,19 @@
                             :disabled="!$website->sitemaps_fetched || $fetchingPages || $website->pages_processing"
                             class="w-full inline-flex items-center justify-center h-9 rounded-md px-4 text-sm font-medium text-white transition cursor-pointer">
                             @if ($fetchingPages || $website->pages_processing)
-                                Fetching pages…
+                                <div class="flex items-center space-x-2">
+                                    <flux:icon.arrow-path class="size-4 animate-spin" />
+                                    <span>
+                                        Fetching pages…
+                                    </span>
+                                </div>
                             @else
-                                Fetch pages
+                                <div class="flex items-center space-x-2">
+                                    <flux:icon.arrows-right-left class="size-4" />
+                                    <span>
+                                        Fetch pages
+                                    </span>
+                                </div>
                             @endif
                         </flux:button>
 
@@ -289,9 +323,118 @@
                             :disabled="!$website->sitemaps_fetched || $fetchingPages || $website->pages_processing"
                             class="w-full inline-flex items-center justify-center h-9 rounded-md px-4 text-sm font-medium text-white transition cursor-pointer">
                             @if ($fetchingPages || $website->pages_processing)
-                                Refreshing pages…
+                                <div class="flex items-center space-x-2">
+                                    <flux:icon.arrow-path class="size-4 animate-spin" />
+                                    <span>
+                                        Refreshing pages…
+                                    </span>
+                                </div>
                             @else
-                                Refresh pages
+                                <div class="flex items-center space-x-2">
+                                    <flux:icon.arrow-path class="size-4" />
+                                    <span>
+                                        Refresh pages
+                                    </span>
+                                </div>
+                            @endif
+                        </flux:button>
+
+                        @if (!empty($website['pages_last_sync']))
+                            <p class="text-xs text-gray-500 text-center pt-2 border-t border-gray-200"
+                                title="{{ $website->pages_last_sync }}">
+                                Last synced: {{ $website->pages_last_sync->diffForHumans() }}
+                            </p>
+                        @endif
+                    </div>
+                @endif
+
+
+            </div>
+        </x-card>
+
+        {{-- ================== CONTENT CARD ================== --}}
+        <x-card class="{{ !$website->content_fetched ? 'opacity-60' : '' }}">
+
+            {{-- Header --}}
+            <div class="px-6 pt-6 flex items-center space-x-2">
+                <flux:icon.circle-stack class="size-4" />
+                <span>
+                    Content
+                </span>
+            </div>
+
+            {{-- Content --}}
+            <div class="px-6 pb-6 pt-4">
+
+                @if (!$website->pages_fetched)
+                    {{-- Not fetched --}}
+                    <div class="space-y-4">
+
+                        <div class="text-center py-4">
+                            <div class="text-3xl text-blue-600 mb-1">
+                                0
+                            </div>
+                            <p class="text-sm">
+                                Pages not fetched
+                            </p>
+                        </div>
+
+                        <flux:button wire:click="fetchPages" wire:loading.attr="disabled"
+                            :disabled="!$website->sitemaps_fetched || $fetchingPages || $website->pages_processing"
+                            class="w-full inline-flex items-center justify-center h-9 rounded-md px-4 text-sm font-medium text-white transition cursor-pointer">
+                            @if ($fetchingPages || $website->pages_processing)
+                                <div class="flex items-center space-x-2">
+                                    <flux:icon.arrow-path class="size-4 animate-spin" />
+                                    <span>
+                                        Extracting content...
+                                    </span>
+                                </div>
+                            @else
+                                <div class="flex items-center space-x-2">
+                                    <flux:icon.arrows-right-left class="size-4" />
+                                    <span>
+                                        Extract content
+                                    </span>
+                                </div>
+                            @endif
+                        </flux:button>
+
+                        @if (!$website->pages_fetched)
+                            <p class="text-sm text-center">
+                                Fetch pages first
+                            </p>
+                        @endif
+                    </div>
+                @else
+                    {{-- Fetched --}}
+                    <div class="space-y-4">
+
+                        <div class="text-center py-4">
+                            <div class="text-3xl text-blue-600 mb-1">
+                                0 / {{ $website['pages_count'] ?? 0 }}
+                            </div>
+                            <p class="text-sm text-gray-500">
+                                Pages processed
+                            </p>
+                        </div>
+
+                        <flux:button wire:click="fetchPages" wire:loading.attr="disabled"
+                            :disabled="!$website->sitemaps_fetched || $fetchingPages || $website->pages_processing"
+                            class="w-full inline-flex items-center justify-center h-9 rounded-md px-4 text-sm font-medium text-white transition cursor-pointer">
+                            @if ($fetchingPages || $website->pages_processing)
+                                <div class="flex items-center space-x-2">
+                                    <flux:icon.arrow-path class="size-4 animate-spin" />
+                                    <span>
+                                        Refreshing pages…
+                                    </span>
+                                </div>
+                            @else
+                                <div class="flex items-center space-x-2">
+                                    <flux:icon.arrow-path class="size-4" />
+                                    <span>
+                                        Refresh pages
+                                    </span>
+                                </div>
                             @endif
                         </flux:button>
 
@@ -307,6 +450,7 @@
             </div>
         </x-card>
 
+
     </div>
 
     @if (session('status'))
@@ -314,5 +458,8 @@
             {{ session('status') }}
         </div>
     @endif
+
+    {{-- Create/Edit website modal --}}
+    <livewire:websites.content-extractor />
 
 </div>
