@@ -19,8 +19,8 @@ if [ -z "$APP_KEY" ]; then
   exit 1
 fi
 
-# Test Redis connectivity
-php -r "try { Redis::ping(); echo 'Redis OK'; } catch (\Exception \$e) { exit(1); }" || {
+# Redis check (Laravel context)
+php artisan tinker --execute="Redis::ping();" >/dev/null 2>&1 || {
   echo "[$(date)] Redis not reachable. Exiting."
   exit 1
 }
