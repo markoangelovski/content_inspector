@@ -107,3 +107,5 @@ job_log.txt
 webjob-queue.log
 
 php artisan view:clear
+
+Would you like me to help you implement a "Cleanup" command that removes Redis keys for runs that crashed and never reached the Finalizer? (Essential for keeping Redis Cloud costs down).

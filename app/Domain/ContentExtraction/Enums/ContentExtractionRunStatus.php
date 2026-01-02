@@ -1,13 +1,16 @@
 <?php
 
+namespace App\Domain\ContentExtraction\Enums;
+
 enum ContentExtractionRunStatus: string
 {
     case Pending = 'pending';
     case Running = 'running';
+    case Paused = 'paused';
+
     case Completed = 'completed';
     case CompletedWithErrors = 'completed_with_errors';
     case Failed = 'failed';
-    case Cancelled = 'cancelled';
 
     public function isTerminal(): bool
     {
@@ -15,7 +18,11 @@ enum ContentExtractionRunStatus: string
             self::Completed,
             self::CompletedWithErrors,
             self::Failed,
-            self::Cancelled,
-        ]);
+        ], true);
+    }
+
+    public function isPaused(): bool
+    {
+        return $this === self::Paused;
     }
 }

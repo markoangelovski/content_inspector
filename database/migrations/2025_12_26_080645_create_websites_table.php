@@ -21,7 +21,6 @@ return new class extends Migration
             $table->timestamps();
             $table->string("name");
             $table->string('url', 2048)->unique();
-            $table->enum('type', ['wordpress', 'ssr', 'csr']);
 
             $table->string("meta_title", 2048)->nullable();
             $table->text("meta_description")->nullable();

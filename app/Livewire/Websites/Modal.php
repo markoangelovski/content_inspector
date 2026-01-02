@@ -17,9 +17,6 @@ class Modal extends Component
     #[Validate("required|string|max:2048")]
     public string $url;
 
-    #[Validate('required|in:wordpress,ssr,csr')]
-    public string $type = 'ssr';
-
     #[Validate("nullable|string")]
     public $meta_title = null;
 
@@ -65,7 +62,6 @@ class Modal extends Component
 
             $this->name = $website["name"];
             $this->url = $website["url"];
-            $this->type = $website["type"];
             $this->meta_title = $website["meta_title"];
             $this->meta_description = $website["meta_description"];
             $this->meta_image_url = $website["meta_image_url"];

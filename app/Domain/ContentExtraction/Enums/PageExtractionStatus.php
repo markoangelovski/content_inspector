@@ -1,22 +1,22 @@
 <?php
 
+namespace App\Domain\ContentExtraction\Enums;
+
 enum PageExtractionStatus: string
 {
     case Pending = 'pending';
-    case Fetching = 'fetching';
-    case Fetched = 'fetched';
-    case Extracting = 'extracting';
-    case Storing = 'storing';
+    case Processing = 'processing';
+
     case Done = 'done';
     case Failed = 'failed';
     case Skipped = 'skipped';
 
-    public function isFinal(): bool
+    public function isTerminal(): bool
     {
         return in_array($this, [
             self::Done,
             self::Failed,
             self::Skipped,
-        ]);
+        ], true);
     }
 }

@@ -353,103 +353,7 @@
         </x-card>
 
         {{-- ================== CONTENT CARD ================== --}}
-        <x-card class="{{ !$website->content_fetched ? 'opacity-60' : '' }}">
-
-            {{-- Header --}}
-            <div class="px-6 pt-6 flex items-center space-x-2">
-                <flux:icon.circle-stack class="size-4" />
-                <span>
-                    Content
-                </span>
-            </div>
-
-            {{-- Content --}}
-            <div class="px-6 pb-6 pt-4">
-
-                @if (!$website->pages_fetched)
-                    {{-- Not fetched --}}
-                    <div class="space-y-4">
-
-                        <div class="text-center py-4">
-                            <div class="text-3xl text-blue-600 mb-1">
-                                0
-                            </div>
-                            <p class="text-sm">
-                                Pages not fetched
-                            </p>
-                        </div>
-
-                        <flux:button wire:click="fetchPages" wire:loading.attr="disabled"
-                            :disabled="!$website->sitemaps_fetched || $fetchingPages || $website->pages_processing"
-                            class="w-full inline-flex items-center justify-center h-9 rounded-md px-4 text-sm font-medium text-white transition cursor-pointer">
-                            @if ($fetchingPages || $website->pages_processing)
-                                <div class="flex items-center space-x-2">
-                                    <flux:icon.arrow-path class="size-4 animate-spin" />
-                                    <span>
-                                        Extracting content...
-                                    </span>
-                                </div>
-                            @else
-                                <div class="flex items-center space-x-2">
-                                    <flux:icon.arrows-right-left class="size-4" />
-                                    <span>
-                                        Extract content
-                                    </span>
-                                </div>
-                            @endif
-                        </flux:button>
-
-                        @if (!$website->pages_fetched)
-                            <p class="text-sm text-center">
-                                Fetch pages first
-                            </p>
-                        @endif
-                    </div>
-                @else
-                    {{-- Fetched --}}
-                    <div class="space-y-4">
-
-                        <div class="text-center py-4">
-                            <div class="text-3xl text-blue-600 mb-1">
-                                0 / {{ $website['pages_count'] ?? 0 }}
-                            </div>
-                            <p class="text-sm text-gray-500">
-                                Pages processed
-                            </p>
-                        </div>
-
-                        <flux:button wire:click="fetchPages" wire:loading.attr="disabled"
-                            :disabled="!$website->sitemaps_fetched || $fetchingPages || $website->pages_processing"
-                            class="w-full inline-flex items-center justify-center h-9 rounded-md px-4 text-sm font-medium text-white transition cursor-pointer">
-                            @if ($fetchingPages || $website->pages_processing)
-                                <div class="flex items-center space-x-2">
-                                    <flux:icon.arrow-path class="size-4 animate-spin" />
-                                    <span>
-                                        Refreshing pages…
-                                    </span>
-                                </div>
-                            @else
-                                <div class="flex items-center space-x-2">
-                                    <flux:icon.arrow-path class="size-4" />
-                                    <span>
-                                        Refresh pages
-                                    </span>
-                                </div>
-                            @endif
-                        </flux:button>
-
-                        @if (!empty($website['pages_last_sync']))
-                            <p class="text-xs text-gray-500 text-center pt-2 border-t border-gray-200"
-                                title="{{ $website->pages_last_sync }}">
-                                Last synced: {{ $website->pages_last_sync->diffForHumans() }}
-                            </p>
-                        @endif
-                    </div>
-                @endif
-
-            </div>
-        </x-card>
-
+        <livewire:content-extraction.status-card :website="$website" />
 
     </div>
 
@@ -459,7 +363,6 @@
         </div>
     @endif
 
-    {{-- Create/Edit website modal --}}
-    <livewire:websites.content-extractor />
+    <livewire:content-extraction.run-overview :website="$website" />
 
 </div>

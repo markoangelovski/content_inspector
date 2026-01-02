@@ -24,7 +24,6 @@ return new class extends Migration {
             $table->string('path', 1024);
             $table->string('parent_path', 1024)->nullable();
             $table->string('slug', 255);
-            $table->json('content')->nullable();
 
             // Relationships
             $table->ulid('website_id');

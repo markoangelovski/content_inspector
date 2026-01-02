@@ -22,7 +22,6 @@ class CreateWebsite
             'user_id' => Auth::id(),
             "name" => strip_tags($websiteData["name"]),
             "url" => rtrim(strip_tags($websiteData["url"]), "/"),
-            "type" => $websiteData["type"],
         ]);
 
         ProcessWebsiteMetadata::dispatch($website->id);

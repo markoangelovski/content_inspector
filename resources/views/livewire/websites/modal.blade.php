@@ -14,14 +14,6 @@
             <flux:input wire:model="url" label="URL" placeholder="Website URL" />
         </div>
 
-        <div class="form-group">
-            <flux:select wire:model="type" label="Type">
-                <flux:select.option value="ssr">SSR</flux:select.option>
-                <flux:select.option value="csr">CSR</flux:select.option>
-                <flux:select.option value="wordpress">Wordpress</flux:select.option>
-            </flux:select>
-        </div>
-
         @if ($isEditMode)
             <div class="form-group">
                 <flux:input wire:model="meta_title" label="Meta Title" placeholder="Meta title" />

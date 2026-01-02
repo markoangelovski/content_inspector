@@ -67,7 +67,6 @@ class StorePages
                 'path' => $path,
                 'slug' => $slug,
                 'parent_path' => $parentPath,
-                'content' => json_encode([]), // initially empty
                 'created_at' => $now,
                 'updated_at' => $now,
             ];

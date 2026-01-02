@@ -17,13 +17,10 @@ class Page extends Model
         'website_id',
         'url',
         'path',
+        'parent_path',
         'slug',
-        'content',
     ];
 
-    protected $casts = [
-        'content' => 'array',
-    ];
 
     public function website(): BelongsTo
     {

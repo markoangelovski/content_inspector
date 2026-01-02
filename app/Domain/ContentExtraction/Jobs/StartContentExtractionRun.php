@@ -2,14 +2,14 @@
 
 namespace App\Domain\ContentExtraction\Jobs;
 
-use PageExtraction;
 use App\Models\Page;
-use ContentExtractionRun;
-use PageExtractionStatus;
 use Illuminate\Bus\Queueable;
-use ContentExtractionRunStatus;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\Domain\ContentExtraction\Models\PageExtraction;
+use App\Domain\ContentExtraction\Enums\PageExtractionStatus;
+use App\Domain\ContentExtraction\Models\ContentExtractionRun;
+use App\Domain\ContentExtraction\Enums\ContentExtractionRunStatus;
 
 class StartContentExtractionRun implements ShouldQueue
 {
@@ -22,44 +22,41 @@ class StartContentExtractionRun implements ShouldQueue
     public function handle(): void
     {
         $run = ContentExtractionRun::find($this->runId);
+        if (!$run || $run->status->isTerminal()) return;
 
-        if (! $run || $run->status !== ContentExtractionRunStatus::Pending) {
-            return;
+        // 1. Bulk Insert Tickets (Faster & avoids row-by-row overhead on Neon)
+        // We use 'on conflict do nothing' via insertOrIgnore to prevent duplicates
+        $pageIds = Page::where('website_id', $run->website_id)->pluck('id');
+
+        $tickets = $pageIds->map(fn($id) => [
+            'id' => (string) str()->ulid(),
+            'page_id' => $id,
+            'content_extraction_run_id' => $run->id,
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ])->toArray();
+
+        PageExtraction::insertOrIgnore($tickets);
+
+        // 2. Update Run Stats
+        $run->update([
+            'status' => ContentExtractionRunStatus::Running,
+            'total_pages' => count($tickets),
+            'processed_pages' => 0,
+            'started_at' => now(),
+        ]);
+
+        // 3. Dispatch only for tickets that haven't started yet
+        $pendingTickets = PageExtraction::where('content_extraction_run_id', $run->id)
+            ->where('status', 'pending')
+            ->get();
+
+        foreach ($pendingTickets as $ticket) {
+            // We update the status to 'processing' immediately BEFORE dispatching
+            // to prevent another process/retry from dispatching it again.
+            $ticket->update(['status' => 'processing']);
+            ExtractPageContentJob::dispatch($ticket->id)->onQueue('page-extraction');
         }
-
-        Page::where('website_id', $run->website_id)
-            ->select('id')
-            ->chunkById(500, function ($pages) use ($run) {
-                foreach ($pages as $page) {
-                    PageExtraction::firstOrCreate(
-                        [
-                            'run_id' => $run->id,
-                            'page_id' => $page->id,
-                        ],
-                        [
-                            'status' => PageExtractionStatus::Pending,
-                            'extractor_version' => $run->extractor_version,
-                        ]
-                    );
-                }
-            });
-
-        $total = PageExtraction::where('run_id', $run->id)->count();
-
-        ContentExtractionRun::where('id', $run->id)
-            ->where('status', ContentExtractionRunStatus::Pending)
-            ->update([
-                'status' => ContentExtractionRunStatus::Running,
-                'total_pages' => $total,
-                'started_at' => now(),
-            ]);
-
-        PageExtraction::where('run_id', $run->id)
-            ->select('id')
-            ->each(
-                fn($pe) =>
-                ExtractPageContentJob::dispatch($pe->id)
-                    ->onQueue('page-extraction')
-            );
     }
 }

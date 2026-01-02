@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Domain\ContentExtraction\Models\ContentExtractionRun;
 
 class Website extends Model
 {
@@ -63,5 +64,10 @@ class Website extends Model
     public function pages(): HasMany
     {
         return $this->hasMany(Page::class);
+    }
+
+    public function latestRun()
+    {
+        return $this->hasOne(ContentExtractionRun::class)->latestOfMany();
     }
 }

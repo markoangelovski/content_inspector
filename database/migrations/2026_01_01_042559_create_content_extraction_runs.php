@@ -14,12 +14,15 @@ return new class extends Migration
         Schema::create('content_extraction_runs', function (Blueprint $table) {
             $table->ulid('id')->primary();
 
-            $table->ulid('website_id')->index();
             $table->string('status', 32);
+            $table->string('mode', 32)->default('initial');
 
             $table->integer('total_pages')->default(0);
             $table->integer('processed_pages')->default(0);
+
             $table->integer('failed_pages')->default(0);
+            $table->text('last_error')->nullable()->after('config');
+            $table->string('failure_summary')->nullable()->after('last_error');
 
             $table->string('extractor_version', 64);
             $table->jsonb('config')->default('{}');
@@ -30,6 +33,13 @@ return new class extends Migration
             $table->ulid('created_by')->nullable();
 
             $table->timestampsTz();
+
+            $table->ulid('website_id')->index();
+            $table
+                ->foreign('website_id')
+                ->references('id')
+                ->on('websites')
+                ->cascadeOnDelete();
         });
     }
 
